@@ -457,11 +457,16 @@ where
         let lock_by = ctx.lock_by().clone();
         let lock_at = *ctx.lock_at();
         let last_error = ctx.last_error().clone();
+        let job = self
+            .codec
+            .encode(&job.inner())
+            .map_err(|e| sqlx::Error::Io(io::Error::new(io::ErrorKind::InvalidData, e)))?;
 
         let mut tx = pool.acquire().await?;
         let query =
-                "UPDATE apalis.jobs SET status = $1, attempts = $2, done_at = $3, lock_by = $4, lock_at = $5, last_error = $6 WHERE id = $7";
+                "UPDATE apalis.jobs SET job = $1, status = $2, attempts = $3, done_at = $4, lock_by = $5, lock_at = $6, last_error = $7 WHERE id = $8";
         sqlx::query(query)
+            .bind(job)
             .bind(status.to_owned())
             .bind(attempts)
             .bind(done_at)

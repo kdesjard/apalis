@@ -313,10 +313,15 @@ where
         let lock_at = *ctx.lock_at();
         let last_error = ctx.last_error().clone();
         let job_id = ctx.id();
+        let job = self
+            .codec
+            .encode(&job.inner())
+            .map_err(|e| sqlx::Error::Io(io::Error::new(io::ErrorKind::InvalidData, e)))?;
         let mut tx = pool.acquire().await?;
         let query =
-                "UPDATE jobs SET status = ?, attempts = ?, done_at = ?, lock_by = ?, lock_at = ?, last_error = ? WHERE id = ?";
+                "UPDATE jobs SET job = ?, status = ?, attempts = ?, done_at = ?, lock_by = ?, lock_at = ?, last_error = ? WHERE id = ?";
         sqlx::query(query)
+            .bind(job)
             .bind(status.to_owned())
             .bind::<i64>(
                 attempts
