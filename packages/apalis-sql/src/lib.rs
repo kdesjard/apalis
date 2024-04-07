@@ -13,6 +13,7 @@
 use std::time::Duration;
 
 /// The context of the sql job
+#[cfg(feature = "context")]
 pub mod context;
 /// Util for fetching rows
 pub mod from_row;

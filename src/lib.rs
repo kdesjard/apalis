@@ -102,6 +102,13 @@ pub mod cron {
     pub use apalis_cron::*;
 }
 
+/// Expose SqlContext
+#[cfg(feature = "apalis-sql")]
+#[cfg_attr(docsrs, doc(cfg(feature = "apalis-sql")))]
+pub mod apalis_sql {
+    pub use apalis_sql::context::*;
+}
+
 /// apalis fully supports middleware via [`Layer`](https://docs.rs/tower/latest/tower/trait.Layer.html)
 pub mod layers;
 
